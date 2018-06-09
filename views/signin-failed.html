@@ -1,0 +1,77 @@
+{% extends "base.html" %} {% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Sign in failed!</h1>
+            <div class="alert alert-danger"> <strong>Sorry!</strong> Your username or password does not match! Please try again.
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><span class="glyphicon glyphicon-user"></span> Please sign in</h3>
+                </div>
+                <div class="panel-body">
+                    <form action="/signin" method="post">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input name="name" class="form-control" placeholder="Username">
+                            <p class="help-block">Use username: tomy</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" name="password" class="form-control" placeholder="Password">
+                            <p class="help-block">Use password: 123123</p>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Sign In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Get more courses...</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">JavaScript</h3>
+                </div>
+                <div class="panel-body">
+                    <p>You can learn JavaScript here</p>
+                    <p><a target="_blank" href="http://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000">Read more</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">ECMAscript</h3>
+                </div>
+                <div class="panel-body">
+                    <p>You can understand ECMAscript</p>
+                    <p><a target="_blank" href="https://www.w3cschool.cn/ecmascript/pgms1q5d.html">Read more</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">git</h3>
+                </div>
+                <div class="panel-body">
+                    <p>A course about git version control</p>
+                    <p><a target="_blank" href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">Read more</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

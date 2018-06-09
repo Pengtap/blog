@@ -1,0 +1,222 @@
+{% extends "base.html" %} {% block main %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><span class="glyphicon glyphicon-th-list"></span> BLOG</h3>
+                </div>
+                <div class="panel-body">
+                    <div id="vm">
+                        <h3 v-text="Ttitle"></h3>
+                        <div style="float: right;color: cornflowerblue;">
+                            <input type="checkbox" v-model="radio" id="radio" v-on:click="init()" />只显示自己
+                        </div>
+                        <p v-if="loading">Loading...</p>
+                        <ol>
+                            <li v-for="t in todos">
+                                <dl>
+                                    <dt id='Name' style="color: blueviolet" contenteditable="true" v-on:blur="update(t, 'name', $event)" v-text="t.name"></dt>
+                                    <dt contenteditable="true" v-on:blur="update(t, 'title', $event)" v-text="t.title"></dt>
+                                    <dd contenteditable="true" v-on:blur="update(t, 'essay', $event)" v-text="t.essay"></dd>
+                                    <dd><a href="#0" v-on:click="remove(t)">Delete</a></dd>
+                                </dl>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><span class="glyphicon glyphicon-plus"></span> Add New News</h3>
+                </div>
+                <div class="panel-body">
+
+                    <form id="vmAdd" action="#0" v-on:submit.prevent="submit">
+                        <label id="name" style="color: blueviolet">{{name}}</label>
+                        <div class="form-group">
+                            <label>Title:</label>
+                            <input type="text" v-model="title" class="form-control" placeholder="Enter title">
+                        </div>
+                        <div class="form-group">
+                            <label>Essay:</label>
+                            <input type="text" v-model="essay" class="form-control" placeholder="Enter essay">
+                        </div>
+                        <button type="submit" class="btn btn-default">Add</button>
+                        <div style="float: right;">
+                            <a href="./">Back to the home page</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Get more courses...</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">JavaScript</h3>
+                </div>
+                <div class="panel-body">
+                    <p>You can learn JavaScript here</p>
+                    <p><a target="_blank" href="http://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000">Read more</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">ECMAscript</h3>
+                </div>
+                <div class="panel-body">
+                    <p>You can understand ECMAscript</p>
+                    <p><a target="_blank" href="https://www.w3cschool.cn/ecmascript/pgms1q5d.html">Read more</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">git</h3>
+                </div>
+                <div class="panel-body">
+                    <p>A course about git version control</p>
+                    <p><a target="_blank" href="http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000">Read more</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showError(resp) {
+        resp.json().then(function(result) {
+            console.log('Error: ' + result.message);
+        });
+    }
+
+    $(function() {
+        var vm = new Vue({
+            el: '#vm',
+            http: {
+                timeout: 3000
+            },
+            data: {
+                Ttitle: 'BLOG List',
+                todos: [],
+                loading: false,
+                radio: true
+            },
+            created: function() {
+                //初始化，使init()方法自动调用
+                this.init();
+            },
+            methods: {
+                init: function() {
+                    var that = this;
+                    that.loading = true;
+                    that.$resource('/api/todos').get().then(function(resp) {
+                        //调用API成功时调用json()异步返回结果
+                        that.loading = false;
+                        resp.json().then((res) => {
+                            //更新VM的todos
+                            if (this.$data.radio !== true) {
+                                that.todos = [];
+
+                                res.todos.forEach(t => {
+                                    if (t.name === $('#name').text()) {
+                                        that.todos.push(t);
+                                    }
+                                });
+                            } else {
+                                that.todos = res.todos;
+                            }
+                            this.$data.radio = !this.$data.radio;
+                        });
+                    }, function(resp) {
+                        //调用api失败
+                        that.loading = false;
+                        showError(resp);
+                    });
+                },
+                create: function(todo) {
+                        var that = this;
+                        that.$resource('/api/todos').save(todo).then(function(resp) {
+                            resp.json().then(function(result) {
+                                that.todos.push(result);
+                            });
+                        }, showError);
+                    }
+                    /*,
+                                    update: function(todo, prop, e) {
+                                        var that = this;
+                                        var t = {
+                                            name: todo.name,
+                                            title: todo.title,
+                                            essay: todo.essay
+                                        };
+                                        t[prop] = e.target.innerText;
+                                        if (t[prop] === todo[prop]) {
+                                            return;
+                                        }
+                                        that.$resource('/api/todos/' + todo.id).update(t).then(function(resp) {
+                                            resp.json().then(function(r) {
+                                                todo.name = r.name;
+                                                todo.title = r.title;
+                                                todo.essay = r.essay;
+                                            });
+                                        }, function(resp) {
+                                            e.target.innerText = todo[prop];
+                                            showError(resp);
+                                        });
+                                    }*/
+                    ,
+                remove: function(todo) {
+                    var that = this;
+                    var rename = $('#name').text();
+                    that.$resource('/api/todos/' + todo.id + '/' + rename).delete().then(function(resp) {
+                        var i, index = -1;
+                        for (i = 0; i < that.todos.length; i++) {
+                            if (that.todos[i].id === todo.id) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index >= 0) {
+                            that.todos.splice(index, 1);
+                        }
+                    }, function(resp) {
+                        alert('您只能删除自己编写的信息，请确认后再删除！');
+                        showError(resp);
+                    });
+                }
+            }
+        });
+        window.vm = vm;
+
+        var vmAdd = new Vue({
+            el: '#vmAdd',
+            data: {
+                name: $('#name').text(),
+                title: '',
+                essay: ''
+            },
+            methods: {
+                submit: function() {
+                    vm.create(this.$data);
+                    this.title = '';
+                    this.essay = '';
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -128,7 +128,7 @@
                         that.loading = false;
                         resp.json().then((res) => {
                             //更新VM的todos
-                            if (this.$data.radio !== true) {
+                            if (this.radio !== true) {
                                 that.todos = [];
 
                                 res.todos.forEach(t => {
@@ -139,7 +139,7 @@
                             } else {
                                 that.todos = res.todos;
                             }
-                            this.$data.radio = !this.$data.radio;
+                            this.radio = !this.radio;
                         });
                     }, function(resp) {
                         //调用api失败
